@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Artistes</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <h1>Liste des Artistes</h1>
+    {{range .}}
+    <div class="artist">
+      <h2>{{.Name}}</h2>
+      <img src="{{.Image}}" alt="Image de {{.Name}}" />
+      <h3>Membres</h3>
+      <ul class="artist-members">
+        {{range .Members}}
+        <li>{{.}}</li>
+        {{end}}
+      </ul>
+    </div>
+    {{end}}
+  </body>
+</html>
