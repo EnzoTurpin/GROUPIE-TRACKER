@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{.Artist.Name}}</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <h1>{{.Artist.Name}}</h1>
+    <img src="{{.Image}}" alt="Photo of {{.Artist.Name}}" />
+    <h2>Members</h2>
+    <ul>
+      {{range .Artist.Members}}
+      <li>{{.}}</li>
+      {{end}}
+    </ul>
+    <h2>Locations</h2>
+    <ul>
+      {{range .Locations}}
+      <li>{{.}}</li>
+      {{end}}
+    </ul>
+    <h2>Dates</h2>
+    <ul>
+      {{range .Dates}}
+      <li>{{.}}</li>
+      {{end}}
+    </ul>
+  </body>
+</html>

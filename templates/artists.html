@@ -14,7 +14,10 @@
       {{range .}}
       <div class="artist">
         <h2>{{.Name}}</h2>
-        <img src="{{.Image}}" alt="Image de {{.Name}}" />
+        <a href="/artist/{{.ID}}">
+          <!-- Ajoutez cette balise autour de l'image -->
+          <img src="{{.Image}}" alt="Image de {{.Name}}" />
+        </a>
       </div>
       {{end}}
     </div>
