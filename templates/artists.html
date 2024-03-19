@@ -3,14 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <title>Artistes</title>
-    <link rel="stylesheet" href="static/css/style.css" />
+    <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
-    {{range .}}
-    <div class="artist">
-      <h2>{{.Name}}</h2>
-      <img src="{{.Image}}" alt="Image de {{.Name}}" />
+    <header>
+      <h1>Liste des artistes</h1>
+    </header>
+
+    <div class="artists-container">
+      {{range .}}
+      <div class="artist">
+        <h2>{{.Name}}</h2>
+        <img src="{{.Image}}" alt="Image de {{.Name}}" />
+      </div>
+      {{end}}
     </div>
-    {{end}}
   </body>
 </html>
