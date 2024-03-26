@@ -6,25 +6,36 @@
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
-    <h1>{{.Artist.Name}}</h1>
-    <img src="{{.Image}}" alt="Photo of {{.Artist.Name}}" />
-    <h2>Members</h2>
-    <ul>
-      {{range .Artist.Members}}
-      <li>{{.}}</li>
-      {{end}}
-    </ul>
-    <h2>Locations</h2>
-    <ul>
-      {{range .Locations}}
-      <li>{{.}}</li>
-      {{end}}
-    </ul>
-    <h2>Dates</h2>
-    <ul>
-      {{range .Dates}}
-      <li>{{.}}</li>
-      {{end}}
-    </ul>
+    <div class="container">
+      <!-- Titre -->
+      <h1 class="title">{{.Artist.Name}}</h1>
+      <div class="content">
+        <!-- Section du texte à gauche -->
+        <div class="text-container">
+          <h2>Membres</h2>
+          <ul class="members-list">
+            {{range .Artist.Members}}
+            <li>{{.}}</li>
+            {{end}}
+          </ul>
+          <h2>Lieux</h2>
+          <ul class="locations-list">
+            {{range .Locations}}
+            <li>{{.}}</li>
+            {{end}}
+          </ul>
+          <h2>Dates</h2>
+          <ul class="dates-list">
+            {{range .Dates}}
+            <li>{{.}}</li>
+            {{end}}
+          </ul>
+        </div>
+        <!-- Section de l'image à droite -->
+        <div class="image-container">
+          <img src="{{.Artist.Image}}" alt="Logo de {{.Artist.Name}}" />
+        </div>
+      </div>
+    </div>
   </body>
 </html>
