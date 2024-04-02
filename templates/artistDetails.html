@@ -7,10 +7,12 @@
   </head>
   <body>
     <div class="container">
-      <!-- Titre -->
       <h1 class="title">{{.Artist.Name}}</h1>
       <div class="content">
-        <!-- Section du texte à gauche -->
+        <div id="map" style="height: 400px; width: 100%"></div>
+        <div class="image-container">
+          <img src="{{.Artist.Image}}" alt="Logo de {{.Artist.Name}}" />
+        </div>
         <div class="text-container">
           <h2>Membres</h2>
           <ul class="members-list">
@@ -18,24 +20,35 @@
             <li>{{.}}</li>
             {{end}}
           </ul>
-          <h2>Lieux</h2>
+          <h2>Prochaine dates et lieux</h2>
           <ul class="locations-list">
-            {{range .Locations}}
-            <li>{{.}}</li>
+            {{range $index, $location := .Locations}}
+            <li>
+              <a
+                href="{{index $.MapLinks $index}}"
+                target="_blank"
+                class="location-link"
+                >{{$location}}</a
+              >
+            </li>
             {{end}}
           </ul>
-          <h2>Dates</h2>
           <ul class="dates-list">
             {{range .Dates}}
             <li>{{.}}</li>
             {{end}}
           </ul>
         </div>
-        <!-- Section de l'image à droite -->
-        <div class="image-container">
-          <img src="{{.Artist.Image}}" alt="Logo de {{.Artist.Name}}" />
-        </div>
       </div>
     </div>
+    <script>
+      var artistLocations = {{ .ArtistLocationsJson }};
+    </script>
+    <script src="/static/js/map.js"></script>
+    <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAh2P2kno4spZ-ERly8TUG4avTK90Z9zrU&callback=initMap"
+    ></script>
   </body>
 </html>

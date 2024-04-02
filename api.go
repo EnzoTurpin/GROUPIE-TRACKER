@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 type ArtistDetail struct {
 	Artist    Artist
 	Locations []string
+	MapLinks  []string // Liens Google Maps pour chaque location
 	Dates     []string
 	Relation  Relation
 }
@@ -36,8 +38,6 @@ type Relation struct {
 	Locations string `json:"locations"`
 	Dates     string `json:"dates"`
 }
-
-// Ajoutez ici vos structures pour les détails de l'artiste comprenant Artist, Location, Date, Relation
 
 func fetchArtists() ([]Artist, error) {
 	var artists []Artist
@@ -75,6 +75,12 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	}
 	detail.Locations = location.Locations
 
+	// Générez les liens Google Maps pour chaque lieu
+	detail.MapLinks = make([]string, len(detail.Locations))
+	for i, locationName := range detail.Locations {
+		detail.MapLinks[i] = generateGoogleMapsLink(locationName)
+	}
+
 	// Fetch dates
 	datesURL := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/dates/%d", artistID)
 	var date Date
@@ -107,4 +113,9 @@ func fetchAPI(url string, target interface{}) error {
 	}
 
 	return json.Unmarshal(body, &target)
+}
+
+func generateGoogleMapsLink(locationName string) string {
+	baseUrl := "https://www.google.com/maps/search/?api=1&query="
+	return baseUrl + url.QueryEscape(locationName)
 }

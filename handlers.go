@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -45,11 +47,35 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := template.ParseFiles("templates/artistDetails.html")
+	// Convertir les emplacements en JSON
+	artistLocationsJson, err := json.Marshal(artistDetail.Locations)
+	if err != nil {
+		http.Error(w, "Failed to serialize locations", http.StatusInternalServerError)
+		return
+	}
+
+	// Log des valeurs pour débogage
+	log.Printf("Locations: %v", artistDetail.Locations)
+	log.Printf("MapLinks: %v", artistDetail.MapLinks)
+
+	// Charger le template
+	t, err := template.New("artistDetails.html").Funcs(template.FuncMap{"js": func(js string) template.JS {
+		return template.JS(js)
+	}}).ParseFiles("templates/artistDetails.html")
 	if err != nil {
 		http.Error(w, "Failed to load template", http.StatusInternalServerError)
 		return
 	}
 
-	t.Execute(w, artistDetail)
+	// Créer une map pour les données à passer au template
+	data := map[string]interface{}{
+		"Artist":              artistDetail.Artist,
+		"ArtistLocationsJson": template.JS(artistLocationsJson),
+	}
+
+	// Exécuter le template avec les données
+	err = t.Execute(w, data)
+	if err != nil {
+		http.Error(w, "Failed to execute template", http.StatusInternalServerError)
+	}
 }

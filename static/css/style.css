@@ -1,14 +1,25 @@
 :root {
-  --bg-color: #f0f2f5;
-  --text-color: #333;
+  --bg-color: #333;
+  --text-color: #fff;
   --card-bg-color: #fff;
   --border-color: #eee;
-  --primary-color: #007bff; /* Couleur principale pour les liens et les boutons */
-  --hover-color: #0056b3; /* Couleur au survol pour les liens et les boutons */
+  --primary-color: #007bff;
+  --hover-color: #0056b3;
 }
 
 html {
   height: 100%;
+}
+
+a,
+li {
+  text-decoration: none;
+}
+
+.members-list li,
+.locations-list li,
+.dates-list li {
+  list-style-type: none;
 }
 
 body {
@@ -19,8 +30,14 @@ body {
   color: var(--text-color);
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   min-height: 100%;
   text-align: center;
+}
+
+body button {
+  margin-top: 20px;
 }
 
 header {
@@ -46,17 +63,50 @@ h1 {
 }
 
 button {
-  background-color: var(--primary-color);
+  background-color: #34656d;
   color: white;
-  padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
+  position: relative;
+  overflow: hidden;
+  border-radius: 9px;
 }
 
 button:hover {
-  background-color: var(--hover-color);
+  background-color: #ffc107;
+  color: #34656d;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: #ffc107;
+  z-index: 0;
+  transition: left 0.5s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button span {
+  position: relative;
+  z-index: 1;
+}
+
+#texteAnime span {
+  font-weight: bold;
+  transition: color 0.3s ease;
+  color: white;
+  font-size: 2rem;
+  margin: 0;
+  padding: 10px;
 }
 
 .artists-container {
@@ -77,6 +127,7 @@ button:hover {
   max-width: 400px;
   text-align: center;
   transition: transform 0.2s;
+  border-radius: 50%;
 }
 
 .artist img {
@@ -90,7 +141,6 @@ button:hover {
   transform: scale(1.05);
 }
 
-/* Styles spécifiques pour la page de détails de l'artiste */
 .artist-details {
   max-width: 800px;
   margin: 20px auto;
@@ -139,13 +189,6 @@ button:hover {
   text-align: center;
 }
 
-.container {
-  width: 90%;
-  max-width: 1000px;
-  margin: 20px auto;
-  text-align: center;
-}
-
 .title {
   margin-bottom: 20px;
   text-align: center;
@@ -153,53 +196,40 @@ button:hover {
 
 .content {
   display: flex;
-  flex-direction: row-reverse; /* Ajouté pour inverser l'ordre des éléments flex */
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
 }
 
+.image-container,
+.text-container {
+  flex-basis: 48%;
+}
+
 .image-container {
-  width: 40%;
-  padding-right: 2%;
+  order: 1;
+  max-width: 60%;
 }
 
 .text-container {
-  width: 58%; /* Ajusté pour le padding */
-}
-
-.members-list,
-.locations-list,
-.dates-list {
-  list-style-type: none;
-  padding-left: 20px;
   text-align: left;
+  width: 58%;
+  order: 2;
 }
 
-img {
+#map {
+  order: 3;
   width: 100%;
-  height: auto;
-  display: block;
+  margin-top: 20px;
 }
+
 @media screen and (max-width: 768px) {
-  .artist-details {
-    width: 95%;
-    margin: 20px auto;
+  .image-container,
+  .text-container {
+    flex-basis: 100%;
   }
 
-  .artist-details img {
-    max-width: 80%;
-  }
-
-  .artist-details h1 {
-    font-size: 1.5rem;
-  }
-
-  .artist-details h2 {
-    font-size: 1.2rem;
-  }
-}
-@media screen and (max-width: 1200px) {
-  .artists-container {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  #map {
+    width: 100%;
   }
 }

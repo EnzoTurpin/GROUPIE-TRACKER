@@ -12,12 +12,13 @@
 
     <div class="artists-container">
       {{range .}}
-      <div class="artist">
+      <div class="card">
+        <div class="artist">
+          <a href="/artist/{{.ID}}">
+            <img src="{{.Image}}" alt="Image de {{.Name}}" />
+          </a>
+        </div>
         <h2>{{.Name}}</h2>
-        <a href="/artist/{{.ID}}">
-          <!-- Ajoutez cette balise autour de l'image -->
-          <img src="{{.Image}}" alt="Image de {{.Name}}" />
-        </a>
       </div>
       {{end}}
     </div>
