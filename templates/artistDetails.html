@@ -18,16 +18,16 @@
           />
         </div>
         <div class="text-container">
-          <h2>Membres</h2>
+          <h2>Membres:</h2>
           <ul class="members-list">
             {{range .Artist.Members}}
             <li>{{.}}</li>
             {{end}}
           </ul>
-          <h2>Prochaines dates et lieux</h2>
+          <h2>Prochaines dates et lieux:</h2>
           <ul class="events-list">
             {{range $index, $location := .Locations}}
-            <li>
+            <li onclick="centerMapOnMarker({{$index}})">
               <span class="event-location">{{$location}};</span>
               <span class="event-date">{{index $.Dates $index}}</span>
             </li>
