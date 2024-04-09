@@ -13,12 +13,16 @@
     <div class="artists-container">
       {{range .}}
       <div class="card">
-        <div class="artist">
-          <a href="/artist/{{.ID}}">
-            <img src="{{.Image}}" alt="Image de {{.Name}}" />
-          </a>
-        </div>
-        <h2>{{.Name}}</h2>
+        <a href="/artist/{{.ID}}" class="card-link">
+          <div class="card-inner">
+            <div class="card-front">
+              <img src="{{.Image}}" alt="Image de l'artiste" />
+            </div>
+            <div class="card-back">
+              <p>Informations sur l'artiste</p>
+            </div>
+          </div>
+        </a>
       </div>
       {{end}}
     </div>

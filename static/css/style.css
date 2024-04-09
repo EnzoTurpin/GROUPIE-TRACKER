@@ -36,10 +36,6 @@ body {
   text-align: center;
 }
 
-body button {
-  margin-top: 20px;
-}
-
 header {
   display: flex;
   justify-content: center;
@@ -51,15 +47,6 @@ h1 {
   font-size: 2rem;
   margin: 0;
   padding: 10px;
-}
-
-.home-page-container,
-.artist-details {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex-grow: 1;
-  text-align: center;
 }
 
 button {
@@ -117,69 +104,53 @@ button span {
   justify-items: center;
 }
 
-.artist {
-  background-color: var(--card-bg-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+/* Composants spécifiques */
+.card {
+  width: 200px;
+  height: 200px;
+  perspective: 1000px;
+  border-radius: 50%;
   overflow: hidden;
-  margin: 20px;
-  width: 80%;
-  max-width: 400px;
-  text-align: center;
-  transition: transform 0.2s;
+}
+
+.card-link,
+.card-inner,
+.card-front,
+.card-back {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
   border-radius: 50%;
 }
 
-.artist img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-bottom: 1px solid var(--border-color);
+.card-front,
+.card-back {
+  position: absolute;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #333;
 }
 
-.artist:hover {
-  transform: scale(1.05);
-}
-
-.artist-details {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
+.card-back {
   background-color: var(--card-bg-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: rotateY(180deg);
 }
 
-.artist-details h1,
-.artist-details h2 {
-  color: var(--primary-color);
-}
-
-.artist-details img {
-  display: block;
-  max-width: 300px;
-  height: auto;
-  margin: 20px auto;
-  border-radius: 10px;
-}
-
-.artist-details ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.artist-details li {
-  background-color: var(--card-bg-color);
-  border: 1px solid var(--border-color);
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
-  transition: background-color 0.2s ease;
-}
-
-.artist-details li:hover {
-  background-color: var(--hover-color);
-  color: var(--card-bg-color);
+.card:hover .card-inner {
+  transform: rotateY(180deg);
 }
 
 .container {
@@ -199,6 +170,10 @@ button span {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.image-artist {
+  border-radius: 50%;
 }
 
 .image-container,
