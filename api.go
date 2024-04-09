@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 )
 
 type ArtistDetail struct {
@@ -37,6 +40,21 @@ type Relation struct {
 	ID        int    `json:"id"`
 	Locations string `json:"locations"`
 	Dates     string `json:"dates"`
+}
+
+var monthsFrench = map[string]string{
+	"January":   "Janvier",
+	"February":  "Février",
+	"March":     "Mars",
+	"April":     "Avril",
+	"May":       "Mai",
+	"June":      "Juin",
+	"July":      "Juillet",
+	"August":    "Août",
+	"September": "Septembre",
+	"October":   "Octobre",
+	"November":  "Novembre",
+	"December":  "Décembre",
 }
 
 func fetchArtists() ([]Artist, error) {
@@ -75,6 +93,10 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	}
 	detail.Locations = location.Locations
 
+	for i, loc := range detail.Locations {
+		detail.Locations[i] = formatLocation(loc)
+	}
+
 	// Générez les liens Google Maps pour chaque lieu
 	detail.MapLinks = make([]string, len(detail.Locations))
 	for i, locationName := range detail.Locations {
@@ -88,6 +110,10 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 		return detail, err
 	}
 	detail.Dates = date.Dates
+
+	for i, date := range detail.Dates {
+		detail.Dates[i] = formatDate(date)
+	}
 
 	// Fetch relation
 	relationURL := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/relation/%d", artistID)
@@ -118,4 +144,31 @@ func fetchAPI(url string, target interface{}) error {
 func generateGoogleMapsLink(locationName string) string {
 	baseUrl := "https://www.google.com/maps/search/?api=1&query="
 	return baseUrl + url.QueryEscape(locationName)
+}
+
+func formatLocation(location string) string {
+	parts := strings.Split(location, "-")
+	for i, part := range parts {
+		part = strings.ReplaceAll(part, "_", " ")
+		parts[i] = strings.Title(strings.ToLower(part)) // Ensure consistent capitalization
+	}
+	return strings.Join(parts, " - ")
+}
+
+func formatDate(dateStr string) string {
+	// Supprimer l'astérisque (*) du début de la chaîne de date si présent
+	cleanDateStr := strings.TrimPrefix(dateStr, "*")
+
+	// Parser la date sans l'astérisque, en utilisant le format attendu après nettoyage
+	date, err := time.Parse("02-01-2006", cleanDateStr)
+	if err != nil {
+		log.Printf("Failed to parse date: %v", err)
+		return dateStr // Retourner la chaîne originale en cas d'erreur
+	}
+
+	// Traduire le mois en français
+	month := monthsFrench[date.Month().String()]
+
+	// Formater la date en "23 Août 2019"
+	return fmt.Sprintf("%02d %s %d", date.Day(), month, date.Year())
 }

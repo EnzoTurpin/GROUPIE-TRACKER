@@ -70,6 +70,9 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 	// Créer une map pour les données à passer au template
 	data := map[string]interface{}{
 		"Artist":              artistDetail.Artist,
+		"Locations":           artistDetail.Locations,
+		"Dates":               artistDetail.Dates,
+		"MapLinks":            artistDetail.MapLinks,
 		"ArtistLocationsJson": template.JS(artistLocationsJson),
 	}
 

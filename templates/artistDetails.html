@@ -14,7 +14,7 @@
           <img
             class="image-artist"
             src="{{.Artist.Image}}"
-            alt="Logo de {{.Artist.Name}}"
+            alt="Image de {{.Artist.Name}}"
           />
         </div>
         <div class="text-container">
@@ -24,22 +24,13 @@
             <li>{{.}}</li>
             {{end}}
           </ul>
-          <h2>Prochaine dates et lieux</h2>
-          <ul class="locations-list">
+          <h2>Prochaines dates et lieux</h2>
+          <ul class="events-list">
             {{range $index, $location := .Locations}}
             <li>
-              <a
-                href="{{index $.MapLinks $index}}"
-                target="_blank"
-                class="location-link"
-                >{{$location}}</a
-              >
+              <span class="event-location">{{$location}};</span>
+              <span class="event-date">{{index $.Dates $index}}</span>
             </li>
-            {{end}}
-          </ul>
-          <ul class="dates-list">
-            {{range .Dates}}
-            <li>{{.}}</li>
             {{end}}
           </ul>
         </div>
