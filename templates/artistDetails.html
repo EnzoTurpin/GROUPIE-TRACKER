@@ -27,9 +27,10 @@
           <h2>Prochaines dates et lieux:</h2>
           <ul class="events-list">
             {{range $index, $location := .Locations}}
-            <li onclick="centerMapOnMarker({{$index}})">
+            <li class="clickable-item" onclick="centerMapOnMarker({{$index}})">
               <span class="event-location">{{$location}};</span>
               <span class="event-date">{{index $.Dates $index}}</span>
+              <span class="view-on-map">📍 Voir sur la carte</span>
             </li>
             {{end}}
           </ul>
@@ -40,6 +41,7 @@
       var artistLocations = {{ .ArtistLocationsJson }};
     </script>
     <script src="/static/js/map.js"></script>
+    <script src="/static/js/scrollToMap.js"></script>
     <script
       async
       defer

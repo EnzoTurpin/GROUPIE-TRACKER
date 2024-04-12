@@ -49,7 +49,7 @@ h1 {
   padding: 10px;
 }
 
-button {
+.btn {
   background-color: #34656d;
   color: white;
   border: none;
@@ -61,12 +61,12 @@ button {
   border-radius: 9px;
 }
 
-button:hover {
+.btn:hover {
   background-color: #ffc107;
   color: #34656d;
 }
 
-button::before {
+.btn::before {
   content: "";
   position: absolute;
   top: 0;
@@ -78,11 +78,11 @@ button::before {
   transition: left 0.5s;
 }
 
-button:hover::before {
+.btn:hover::before {
   left: 100%;
 }
 
-button span {
+.btn span {
   position: relative;
   z-index: 1;
 }
@@ -102,6 +102,13 @@ button span {
   gap: 20px;
   padding: 20px;
   justify-items: center;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 0;
 }
 
 /* Composants spécifiques */
@@ -153,6 +160,17 @@ button span {
   transform: rotateY(180deg);
 }
 
+.card-back h3 {
+  font-size: 1.2em; /* Taille du titre */
+  margin: 0; /* Supprimer la marge par défaut */
+  padding: 10px 0; /* Espacement autour du titre */
+}
+
+.card-back p {
+  font-size: 0.9em; /* Taille du paragraphe */
+  margin: 5px 0; /* Espacement entre les paragraphes */
+}
+
 .container {
   width: 90%;
   max-width: 1000px;
@@ -190,6 +208,34 @@ button span {
   text-align: left;
   width: 58%;
   order: 2;
+}
+
+.events-list {
+  list-style-type: none; /* Supprime les puces */
+  padding-left: 0; /* Supprime l'indentation par défaut des listes */
+}
+
+.events-list li {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.clickable-item {
+  cursor: pointer;
+}
+
+.view-on-map:before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.clickable-item:hover {
+  transform: scale(1.02); /* Léger agrandissement */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transition douce */
 }
 
 #map {

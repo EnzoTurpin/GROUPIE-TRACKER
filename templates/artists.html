@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Artistes</title>
+    <title>Liste des Artistes</title>
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
@@ -19,7 +19,16 @@
               <img src="{{.Image}}" alt="Image de l'artiste" />
             </div>
             <div class="card-back">
-              <p>Informations sur l'artiste</p>
+              <div>
+                <h2>{{.Name}}</h2>
+                <p>
+                  <strong>Date de création:</strong><br />
+                  {{formatCreationYear .CreationDate}}
+                </p>
+                <p>
+                  <strong>Premier album:</strong> <br />{{.FirstAlbumDateStr}}
+                </p>
+              </div>
             </div>
           </div>
         </a>
