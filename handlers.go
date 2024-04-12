@@ -79,8 +79,8 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 		"js": func(js string) template.JS {
 			return template.JS(js)
 		},
-		"formatCreationYear": formatCreationYear, // Ajout de votre fonction
-		"formatDateToFrench": formatDateToFrench, // Ajout de votre fonction
+		"formatCreationYear": formatCreationYear,
+		"formatDateToFrench": formatDateToFrench,
 	}
 
 	// Charger le template avec les fonctions enregistrées
@@ -124,4 +124,21 @@ func formatDateToFrench(dateStr string) string {
 
 func formatCreationYear(year int) string {
 	return strconv.Itoa(year) // Convertit une année de type int en string
+}
+
+func formatLocationName(location string) string {
+	location = strings.Replace(location, "_", " ", -1)
+	parts := strings.Split(location, "-")
+	for i, part := range parts {
+		if i == 0 { // Assuming the first part is the city
+			words := strings.Fields(part)
+			for j, word := range words {
+				words[j] = strings.Title(strings.ToLower(word))
+			}
+			parts[i] = strings.Join(words, " ")
+		} else { // Assuming the second part is the country
+			parts[i] = strings.ToUpper(strings.TrimSpace(part))
+		}
+	}
+	return strings.Join(parts, " - ")
 }

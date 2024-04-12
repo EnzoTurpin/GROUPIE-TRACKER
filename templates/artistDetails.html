@@ -28,9 +28,7 @@
           <ul class="events-list">
             {{range $index, $location := .Locations}}
             <li class="clickable-item" onclick="centerMapOnMarker({{$index}})">
-              <span class="event-location">{{$location}};</span>
-              <span class="event-date">{{index $.Dates $index}}</span>
-              <span class="view-on-map">📍 Voir sur la carte</span>
+              {{$location}}, {{index $.Dates $index}} 📍 Voir sur la carte
             </li>
             {{end}}
           </ul>
