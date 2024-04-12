@@ -66,11 +66,12 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convertir les emplacements en JSON pour utilisation dans JavaScript
+	// Convertir les emplacements et coordonnées en JSON pour utilisation dans JavaScript
 	artistLocationsJson, err := json.Marshal(artistDetail.Locations)
+	firstLocationCoordsJson, err := json.Marshal(artistDetail.FirstLocationCoords)
 	if err != nil {
-		log.Printf("Error serializing locations: %v", err)
-		http.Error(w, "Failed to serialize locations", http.StatusInternalServerError)
+		log.Printf("Error serializing locations or coordinates: %v", err)
+		http.Error(w, "Failed to serialize locations or coordinates", http.StatusInternalServerError)
 		return
 	}
 
@@ -99,6 +100,7 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 		"Dates":               artistDetail.Dates,
 		"MapLinks":            artistDetail.MapLinks,
 		"ArtistLocationsJson": template.JS(artistLocationsJson),
+		"FirstLocationCoords": template.JS(firstLocationCoordsJson),
 	}
 
 	// Exécuter le template avec les données

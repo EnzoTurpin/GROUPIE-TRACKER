@@ -35,15 +35,26 @@
         </div>
       </div>
     </div>
-    <script>
-      var artistLocations = {{ .ArtistLocationsJson }};
-    </script>
-    <script src="/static/js/map.js"></script>
-    <script src="/static/js/scrollToMap.js"></script>
+
+    <!-- Ajoutez l'élément avec l'ID 'firstLocationCoords' ici -->
+    <div id="firstLocationCoords" style="display: none">
+      {{ .FirstLocationCoords }}
+    </div>
+
+    <!-- Google Maps JavaScript API -->
     <script
       async
       defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAh2P2kno4spZ-ERly8TUG4avTK90Z9zrU&callback=initMap"
     ></script>
+
+    <!-- Définition des emplacements des artistes pour utilisation dans JavaScript -->
+    <script>
+      var artistLocations = {{ .ArtistLocationsJson }};
+    </script>
+
+    <!-- Liens vers les scripts JavaScript personnalisés -->
+    <script src="/static/js/map.js"></script>
+    <script src="/static/js/scrollToMap.js"></script>
   </body>
 </html>

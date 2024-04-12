@@ -12,11 +12,15 @@ import (
 )
 
 type ArtistDetail struct {
-	Artist    Artist
-	Locations []string
-	MapLinks  []string // Liens Google Maps pour chaque location
-	Dates     []string
-	Relation  Relation
+	Artist              Artist
+	Locations           []string
+	MapLinks            []string // Liens Google Maps pour chaque location
+	Dates               []string
+	Relation            Relation
+	FirstLocationCoords struct {
+		Lat float64 `json:"lat"`
+		Lng float64 `json:"lng"`
+	} `json:"firstLocationCoords"`
 }
 
 type Artist struct {
@@ -73,6 +77,47 @@ func fetchArtists() ([]Artist, error) {
 	return artists, nil
 }
 
+func geocodeLocation(locationName string) (float64, float64, error) {
+	apiKey := "AIzaSyAh2P2kno4spZ-ERly8TUG4avTK90Z9zrU" // Remplacez ceci par votre clé API Google Maps
+	baseUrl := "https://maps.googleapis.com/maps/api/geocode/json"
+	requestUrl := fmt.Sprintf("%s?address=%s&key=%s", baseUrl, url.QueryEscape(locationName), apiKey)
+
+	resp, err := http.Get(requestUrl)
+	if err != nil {
+		return 0, 0, err
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Results []struct {
+			Geometry struct {
+				Location struct {
+					Lat float64 `json:"lat"`
+					Lng float64 `json:"lng"`
+				} `json:"location"`
+			} `json:"geometry"`
+		} `json:"results"`
+		Status string `json:"status"`
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	if result.Status != "OK" || len(result.Results) == 0 {
+		return 0, 0, fmt.Errorf("no results found for location: %s", locationName)
+	}
+
+	firstResult := result.Results[0]
+	return firstResult.Geometry.Location.Lat, firstResult.Geometry.Location.Lng, nil
+}
+
 func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	var detail ArtistDetail
 
@@ -83,9 +128,9 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	}
 
 	found := false
-	for _, a := range artists {
-		if a.ID == artistID {
-			detail.Artist = a
+	for _, artist := range artists {
+		if artist.ID == artistID {
+			detail.Artist = artist
 			found = true
 			break
 		}
@@ -105,18 +150,31 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	detail.Locations = location.Locations
 
 	datesURL := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/dates/%d", artistID)
-	var date Date
-	if err := fetchAPI(datesURL, &date); err != nil {
+	var dates Date
+	if err := fetchAPI(datesURL, &dates); err != nil {
 		log.Printf("Error fetching dates for artist ID %d: %v", artistID, err)
 		return detail, err
 	}
-	detail.Dates = date.Dates
+	detail.Dates = dates.Dates
 
 	detail.MapLinks = make([]string, len(detail.Locations))
 	for i, locationName := range detail.Locations {
-		formattedLocationName := formatLocationName(locationName)          // Ensure location names are formatted
-		detail.MapLinks[i] = generateGoogleMapsLink(formattedLocationName) // Use formatted names for map links
-		detail.Locations[i] = formattedLocationName                        // Store formatted location names
+		formattedLocationName := formatLocationName(locationName)
+		detail.MapLinks[i] = generateGoogleMapsLink(formattedLocationName)
+		detail.Locations[i] = formattedLocationName
+	}
+
+	if len(detail.Locations) > 0 {
+		firstLocationName := detail.Locations[0]
+		lat, lng, err := geocodeLocation(firstLocationName)
+		if err != nil {
+			log.Printf("Error geocoding location %s: %v", firstLocationName, err)
+			return detail, err
+		}
+		detail.FirstLocationCoords.Lat = lat
+		detail.FirstLocationCoords.Lng = lng
+	} else {
+		log.Printf("No locations found for artist ID %d", artistID)
 	}
 
 	if len(detail.Dates) > 0 {
