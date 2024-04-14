@@ -33,7 +33,7 @@ Le projet est structuré en plusieurs composants principaux : Handlers Go pour l
    ```
 
 2. **Construisez le projet**:
-   Utilisez le `Makefile` pour construire le projet :
+   Utilisez le `Makefile` pour construire le projet, assurez-vous d'être à la racine du projet :
 
    ```bash
    make build

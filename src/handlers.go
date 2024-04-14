@@ -2,13 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +18,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
-// Lors de la définition de votre handler pour les artistes
 func artistsHandler(w http.ResponseWriter, r *http.Request) {
 	searchQuery := r.URL.Query().Get("search")
 
@@ -30,7 +27,6 @@ func artistsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Filtrer les artistes si searchQuery n'est pas vide
 	if searchQuery != "" {
 		var filteredArtists []Artist
 		for _, artist := range artists {
@@ -54,7 +50,7 @@ func artistsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"Artists":     artists, // Assurez-vous que ceci est une tranche de Artist
+		"Artists":     artists,
 		"SearchQuery": searchQuery,
 	}
 
@@ -121,38 +117,4 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error executing template for artist ID %d: %v", artistID, err)
 		http.Error(w, "Failed to execute template", http.StatusInternalServerError)
 	}
-}
-
-func formatDateToFrench(dateStr string) string {
-	if dateStr == "" {
-		return "Date non spécifiée" // Return this if the date string is empty
-	}
-	parsedDate, err := time.Parse("02-01-2006", dateStr) // Ensure this format matches your data
-	if err != nil {
-		log.Printf("Failed to parse date '%s': %v", dateStr, err)
-		return "Format de date invalide"
-	}
-	frenchDate := fmt.Sprintf("%02d %s %d", parsedDate.Day(), monthsFrench[parsedDate.Month().String()], parsedDate.Year())
-	return frenchDate
-}
-
-func formatCreationYear(year int) string {
-	return strconv.Itoa(year) // Convertit une année de type int en string
-}
-
-func formatLocationName(location string) string {
-	// Replace underscores with spaces to handle city names with spaces
-	location = strings.Replace(location, "_", " ", -1)
-
-	// Split the location into parts (city and country) assuming '-' is the delimiter
-	parts := strings.Split(location, "-")
-	if len(parts) == 2 {
-		// Capitalize the first letter of each word in the city name
-		parts[0] = strings.Title(parts[0])
-		// Convert the country code/name to uppercase
-		parts[1] = strings.ToUpper(parts[1])
-	}
-
-	// Join the parts back into a single string
-	return strings.Join(parts, ", ")
 }
