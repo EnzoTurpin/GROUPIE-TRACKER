@@ -5,6 +5,22 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
   </head>
   <body>
+    <header>
+      <nav>
+        <div class="title"><h1 id="site-title">GROUPIE TRACKER</h1></div>
+        <div id="searchContainer">
+          <input
+            type="text"
+            id="searchBox"
+            placeholder="Rechercher un artiste..."
+          />
+        </div>
+        <ul>
+          <li><a href="/" class="nav-link">Accueil</a></li>
+          <li><a href="/artists" class="nav-link">Artistes</a></li>
+        </ul>
+      </nav>
+    </header>
     <div class="main">
       <div id="texteAnime">GROUPIE TRACKER</div>
       <br />
@@ -12,5 +28,14 @@
       <a href="/artists"><button class="btn">Voir les artistes</button></a>
     </div>
     <script src="/static/js/script.js" defer></script>
+    <footer>
+      <h3>Groupie Tracker</h3>
+      <br />
+      <p>
+        Trouvez et suivez vos groupes de musique préférés en toute simplicité.
+      </p>
+      <p>Projet réalisé par <strong>Enzo</strong> et <strong>Daryl</strong>.</p>
+      <p>&copy; 2024 Groupie Tracker. Tous droits réservés.</p>
+    </footer>
   </body>
 </html>

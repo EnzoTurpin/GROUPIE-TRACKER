@@ -7,16 +7,13 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 )
 
 type ArtistDetail struct {
 	Artist              Artist
-	Locations           []string
-	MapLinks            []string // Liens Google Maps pour chaque location
-	Dates               []string
-	Relation            Relation
+	DatesLocations      map[string][]string // Map de localisations vers listes de dates
+	MapLinks            []string            // Liens Google Maps pour chaque localisation
 	FirstLocationCoords struct {
 		Lat float64 `json:"lat"`
 		Lng float64 `json:"lng"`
@@ -44,9 +41,8 @@ type Date struct {
 }
 
 type Relation struct {
-	ID        int    `json:"id"`
-	Locations string `json:"locations"`
-	Dates     string `json:"dates"`
+	ID             int                 `json:"id"`
+	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
 var monthsFrench = map[string]string{
@@ -121,6 +117,7 @@ func geocodeLocation(locationName string) (float64, float64, error) {
 func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	var detail ArtistDetail
 
+	// Fetch artist base details
 	artists, err := fetchArtists()
 	if err != nil {
 		log.Printf("Error fetching artists: %v", err)
@@ -141,34 +138,41 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 		return detail, err
 	}
 
-	locationURL := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/locations/%d", artistID)
-	var location Location
-	if err := fetchAPI(locationURL, &location); err != nil {
-		log.Printf("Error fetching location for artist ID %d: %v", artistID, err)
+	// Fetch locations and dates
+	locationURL := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/relation/%d", artistID)
+	var relations Relation
+	if err := fetchAPI(locationURL, &relations); err != nil {
+		log.Printf("Error fetching relations for artist ID %d: %v", artistID, err)
 		return detail, err
 	}
-	detail.Locations = location.Locations
 
-	datesURL := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/dates/%d", artistID)
-	var dates Date
-	if err := fetchAPI(datesURL, &dates); err != nil {
-		log.Printf("Error fetching dates for artist ID %d: %v", artistID, err)
-		return detail, err
+	// Process and format location names and dates
+	formattedDatesLocations := make(map[string][]string)
+	for location, dates := range relations.DatesLocations {
+		formattedLocationName := formatLocationName(location)
+		formattedDates := []string{}
+		for _, date := range dates {
+			formattedDate := formatDate(date) // Format each date
+			formattedDates = append(formattedDates, formattedDate)
+		}
+		formattedDatesLocations[formattedLocationName] = formattedDates
 	}
-	detail.Dates = dates.Dates
+	detail.DatesLocations = formattedDatesLocations
 
-	detail.MapLinks = make([]string, len(detail.Locations))
-	for i, locationName := range detail.Locations {
-		formattedLocationName := formatLocationName(locationName)
-		detail.MapLinks[i] = generateGoogleMapsLink(formattedLocationName)
-		detail.Locations[i] = formattedLocationName
+	// Generate map links and ensure names are correctly formatted
+	detail.MapLinks = make([]string, len(detail.DatesLocations))
+	i := 0
+	for location := range detail.DatesLocations {
+		detail.MapLinks[i] = generateGoogleMapsLink(location)
+		i++
 	}
 
-	if len(detail.Locations) > 0 {
-		firstLocationName := detail.Locations[0]
-		lat, lng, err := geocodeLocation(firstLocationName)
+	// Optional: Handle geocoding for the first location if necessary
+	if len(detail.DatesLocations) > 0 {
+		firstLocation := getFirstKey(detail.DatesLocations)
+		lat, lng, err := geocodeLocation(firstLocation)
 		if err != nil {
-			log.Printf("Error geocoding location %s: %v", firstLocationName, err)
+			log.Printf("Error geocoding location %s: %v", firstLocation, err)
 			return detail, err
 		}
 		detail.FirstLocationCoords.Lat = lat
@@ -177,15 +181,15 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 		log.Printf("No locations found for artist ID %d", artistID)
 	}
 
-	if len(detail.Dates) > 0 {
-		for i, dateStr := range detail.Dates {
-			detail.Dates[i] = formatDate(dateStr)
-		}
-	} else {
-		log.Printf("No dates found for artist ID %d", artistID)
-	}
-
 	return detail, nil
+}
+
+// Helper function to get the first key from a map
+func getFirstKey(m map[string][]string) string {
+	for k := range m {
+		return k
+	}
+	return ""
 }
 
 func fetchAPI(url string, target interface{}) error {
@@ -209,12 +213,50 @@ func generateGoogleMapsLink(locationName string) string {
 }
 
 func formatDate(dateStr string) string {
-	cleanDateStr := strings.TrimPrefix(dateStr, "*")
-	date, err := time.Parse("02-01-2006", cleanDateStr)
+	// Parse the date from DD-MM-YYYY
+	date, err := time.Parse("02-01-2006", dateStr)
 	if err != nil {
-		log.Printf("Failed to parse date: %v", err)
-		return dateStr
+		log.Printf("Failed to parse date '%s': %v", dateStr, err)
+		return dateStr // Return the original string if parsing fails
 	}
+	// Format the date to French format
+	day := date.Format("02")
 	month := monthsFrench[date.Month().String()]
-	return fmt.Sprintf("%02d %s %d", date.Day(), month, date.Year())
+	year := date.Format("2006")
+	return fmt.Sprintf("%s %s %s", day, month, year)
+}
+
+func fetchArtistRelations(artistID int) (Relation, error) {
+	var relations Relation
+	url := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/relation/%d", artistID)
+	resp, err := http.Get(url)
+	if err != nil {
+		return relations, fmt.Errorf("HTTP request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return relations, fmt.Errorf("API request failed with status %d", resp.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return relations, fmt.Errorf("failed to read response body: %v", err)
+	}
+
+	err = json.Unmarshal(body, &relations)
+	if err != nil {
+		return relations, fmt.Errorf("error decoding JSON from API: %v", err)
+	}
+
+	// Debugging output to check what data has been fetched
+	fmt.Println("Dates and Locations for the artist:")
+	for location, dates := range relations.DatesLocations {
+		fmt.Println("Location:", location)
+		for _, date := range dates {
+			fmt.Println(" - Date:", date)
+		}
+	}
+
+	return relations, nil
 }

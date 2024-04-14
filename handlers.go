@@ -22,19 +22,30 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 // Lors de la définition de votre handler pour les artistes
 func artistsHandler(w http.ResponseWriter, r *http.Request) {
+	searchQuery := r.URL.Query().Get("search")
+
 	artists, err := fetchArtists()
 	if err != nil {
 		http.Error(w, "Impossible de récupérer les artistes", http.StatusInternalServerError)
 		return
 	}
 
-	// Création de FuncMap pour inclure vos fonctions personnalisées
+	// Filtrer les artistes si searchQuery n'est pas vide
+	if searchQuery != "" {
+		var filteredArtists []Artist
+		for _, artist := range artists {
+			if strings.Contains(strings.ToLower(artist.Name), strings.ToLower(searchQuery)) {
+				filteredArtists = append(filteredArtists, artist)
+			}
+		}
+		artists = filteredArtists
+	}
+
 	funcMap := template.FuncMap{
 		"formatCreationYear": formatCreationYear,
 		"formatDateToFrench": formatDateToFrench,
 	}
 
-	// Chargement du template avec FuncMap
 	t, err := template.New("artists.html").Funcs(funcMap).ParseFiles("templates/artists.html")
 	if err != nil {
 		log.Printf("Erreur lors du chargement du template: %v", err)
@@ -42,8 +53,12 @@ func artistsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Exécution du template avec les données (artists)
-	err = t.Execute(w, artists)
+	data := map[string]interface{}{
+		"Artists":     artists, // Assurez-vous que ceci est une tranche de Artist
+		"SearchQuery": searchQuery,
+	}
+
+	err = t.Execute(w, data)
 	if err != nil {
 		log.Printf("Erreur lors de l'exécution du template: %v", err)
 		http.Error(w, "Erreur lors de l'exécution du template", http.StatusInternalServerError)
@@ -66,25 +81,25 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Convertir les emplacements et coordonnées en JSON pour utilisation dans JavaScript
-	artistLocationsJson, err := json.Marshal(artistDetail.Locations)
-	firstLocationCoordsJson, err := json.Marshal(artistDetail.FirstLocationCoords)
+	artistLocationsDatesJson, err := json.Marshal(artistDetail.DatesLocations)
 	if err != nil {
-		log.Printf("Error serializing locations or coordinates: %v", err)
-		http.Error(w, "Failed to serialize locations or coordinates", http.StatusInternalServerError)
+		log.Printf("Error serializing artist locations: %v", err)
+		http.Error(w, "Internal Server Error", 500)
 		return
 	}
 
-	// Préparer les fonctions à utiliser dans le template
+	firstLocationCoordsJson, err := json.Marshal(artistDetail.FirstLocationCoords)
+	if err != nil {
+		log.Printf("Error serializing coordinates: %v", err)
+		http.Error(w, "Failed to serialize coordinates", http.StatusInternalServerError)
+		return
+	}
+
 	funcMap := template.FuncMap{
-		"js": func(js string) template.JS {
-			return template.JS(js)
-		},
 		"formatCreationYear": formatCreationYear,
 		"formatDateToFrench": formatDateToFrench,
 	}
 
-	// Charger le template avec les fonctions enregistrées
 	t, err := template.New("artistDetails.html").Funcs(funcMap).ParseFiles("templates/artistDetails.html")
 	if err != nil {
 		log.Printf("Error loading template: %v", err)
@@ -92,18 +107,15 @@ func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Créer une map pour les données à passer au template
 	data := map[string]interface{}{
-		"Artist":              artistDetail.Artist,
-		"FormattedFirstAlbum": artistDetail.Artist.FirstAlbumDateStr,
-		"Locations":           artistDetail.Locations,
-		"Dates":               artistDetail.Dates,
-		"MapLinks":            artistDetail.MapLinks,
-		"ArtistLocationsJson": template.JS(artistLocationsJson),
-		"FirstLocationCoords": template.JS(firstLocationCoordsJson),
+		"Artist":                   artistDetail.Artist,
+		"FormattedFirstAlbum":      artistDetail.Artist.FirstAlbumDateStr,
+		"DatesLocations":           artistDetail.DatesLocations,
+		"MapLinks":                 artistDetail.MapLinks,
+		"ArtistLocationsDatesJson": template.JS(artistLocationsDatesJson),
+		"FirstLocationCoords":      template.JS(firstLocationCoordsJson),
 	}
 
-	// Exécuter le template avec les données
 	err = t.Execute(w, data)
 	if err != nil {
 		log.Printf("Error executing template for artist ID %d: %v", artistID, err)
@@ -129,18 +141,18 @@ func formatCreationYear(year int) string {
 }
 
 func formatLocationName(location string) string {
+	// Replace underscores with spaces to handle city names with spaces
 	location = strings.Replace(location, "_", " ", -1)
+
+	// Split the location into parts (city and country) assuming '-' is the delimiter
 	parts := strings.Split(location, "-")
-	for i, part := range parts {
-		if i == 0 { // Assuming the first part is the city
-			words := strings.Fields(part)
-			for j, word := range words {
-				words[j] = strings.Title(strings.ToLower(word))
-			}
-			parts[i] = strings.Join(words, " ")
-		} else { // Assuming the second part is the country
-			parts[i] = strings.ToUpper(strings.TrimSpace(part))
-		}
+	if len(parts) == 2 {
+		// Capitalize the first letter of each word in the city name
+		parts[0] = strings.Title(parts[0])
+		// Convert the country code/name to uppercase
+		parts[1] = strings.ToUpper(parts[1])
 	}
-	return strings.Join(parts, " - ")
+
+	// Join the parts back into a single string
+	return strings.Join(parts, ", ")
 }
