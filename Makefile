@@ -2,9 +2,9 @@
 BINARY_NAME=GroupieTracker
  
 # Liste explicite des fichiers source
-SOURCES := main.go \
-           api.go \
-           handlers.go \
+SOURCES := src/main.go \
+           src/api.go \
+           src/handlers.go \
            
  
 # Commande de build
