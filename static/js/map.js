@@ -1,28 +1,23 @@
 function setUpMarkers(map, locations) {
   var markers = {};
   Object.keys(locations).forEach(function (locationKey) {
-    var locationDetails = locations[locationKey];
-    locationDetails.forEach(function (detail) {
-      if (detail.coords) {
-        var pos = new google.maps.LatLng(detail.coords.lat, detail.coords.lng);
-        var marker = new google.maps.Marker({
-          map: map,
-          position: pos,
-          title: locationKey,
-        });
-        markers[locationKey] = marker;
-        console.log(`Marker set for ${locationKey}`);
-      } else {
-        console.log(`Invalid coordinates for ${locationKey}:`, detail.coords);
-      }
+    var details = locations[locationKey];
+    var coords = details[0].split(","); // Les coordonnées sont le premier élément
+    var lat = parseFloat(coords[0]);
+    var lng = parseFloat(coords[1]);
+    var pos = new google.maps.LatLng(lat, lng);
+    var marker = new google.maps.Marker({
+      map: map,
+      position: pos,
+      title: locationKey,
     });
+    markers[locationKey] = marker;
   });
 
   window.centerMapOnMarker = function (markerKey) {
     if (markers[markerKey]) {
       map.setCenter(markers[markerKey].getPosition());
       map.setZoom(15);
-      console.log("Centered map on marker:", markerKey);
     } else {
       console.error("Marker not found for key:", markerKey);
     }
@@ -39,7 +34,6 @@ window.initMap = function () {
   }
 
   var firstLocation = JSON.parse(firstLocationCoordsElement.textContent);
-
   var mapOptions = {
     zoom: 8,
     center: new google.maps.LatLng(firstLocation.lat, firstLocation.lng),

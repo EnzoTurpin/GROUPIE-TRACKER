@@ -72,7 +72,12 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	formattedDatesLocations := make(map[string][]string)
 	for location, dates := range relations.DatesLocations {
 		formattedLocationName := formatLocationName(location)
-		formattedDates := []string{}
+		lat, lng, err := geocodeLocation(formattedLocationName)
+		if err != nil {
+			log.Printf("Error geocoding location %s: %v", formattedLocationName, err)
+			continue
+		}
+		formattedDates := []string{fmt.Sprintf("%f,%f", lat, lng)}
 		for _, date := range dates {
 			formattedDate := formatDate(date)
 			formattedDates = append(formattedDates, formattedDate)
@@ -80,26 +85,6 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 		formattedDatesLocations[formattedLocationName] = formattedDates
 	}
 	detail.DatesLocations = formattedDatesLocations
-
-	detail.MapLinks = make([]string, len(detail.DatesLocations))
-	i := 0
-	for location := range detail.DatesLocations {
-		detail.MapLinks[i] = generateGoogleMapsLink(location)
-		i++
-	}
-
-	if len(detail.DatesLocations) > 0 {
-		firstLocation := getFirstKey(detail.DatesLocations)
-		lat, lng, err := geocodeLocation(firstLocation)
-		if err != nil {
-			log.Printf("Error geocoding location %s: %v", firstLocation, err)
-			return detail, err
-		}
-		detail.FirstLocationCoords.Lat = lat
-		detail.FirstLocationCoords.Lng = lng
-	} else {
-		log.Printf("No locations found for artist ID %d", artistID)
-	}
 
 	return detail, nil
 }

@@ -2,12 +2,10 @@ package main
 
 type ArtistDetail struct {
 	Artist              Artist
-	DatesLocations      map[string][]string
+	DatesLocations      map[string][]string // Ne contiendra que les dates
 	MapLinks            []string
-	FirstLocationCoords struct {
-		Lat float64 `json:"lat"`
-		Lng float64 `json:"lng"`
-	}
+	LocationCoords      map[string]Coords // Nouveau champ pour les coordonnées
+	FirstLocationCoords Coords
 }
 
 // Artist définit la structure de base des données de l'artiste.
@@ -37,4 +35,9 @@ type Date struct {
 type Relation struct {
 	ID             int                 `json:"id"`
 	DatesLocations map[string][]string `json:"datesLocations"`
+}
+
+type Coords struct {
+	Lat float64 `json:"lat"`
+	Lng float64 `json:"lng"`
 }
