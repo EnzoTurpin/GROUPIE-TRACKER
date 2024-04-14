@@ -5,9 +5,11 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
   </head>
   <body>
+    <!-- En-tête avec le titre et la navigation -->
     <header>
       <nav>
-        <div class="title"><h1 id="site-title">GROUPIE TRACKER</h1></div>
+        <div class="title"><h1>GROUPIE TRACKER</h1></div>
+        <!-- Zone de recherche -->
         <div id="searchContainer">
           <input
             type="text"
@@ -15,19 +17,25 @@
             placeholder="Rechercher un artiste..."
           />
         </div>
+        <!-- Liens de navigation -->
         <ul>
           <li><a href="/" class="nav-link">Accueil</a></li>
           <li><a href="/artists" class="nav-link">Artistes</a></li>
         </ul>
       </nav>
     </header>
+    <!-- Contenu principal -->
     <div class="main">
+      <!-- Animation du texte "GROUPIE TRACKER" -->
       <div id="texteAnime">GROUPIE TRACKER</div>
       <br />
       <br />
+      <!-- Bouton pour voir les artistes -->
       <a href="/artists"><button class="btn">Voir les artistes</button></a>
     </div>
+    <!-- Script JavaScript pour l'animation du texte -->
     <script src="/static/js/script.js" defer></script>
+    <!-- Pied de page -->
     <footer>
       <h3>Groupie Tracker</h3>
       <br />

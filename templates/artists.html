@@ -6,15 +6,18 @@
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
+    <!-- En-tête avec le titre et la navigation -->
     <header>
       <nav>
         <div class="title">
-          <h1 id="site-title">
+          <!-- Titre du site avec un lien vers l'accueil -->
+          <h1>
             <a href="/votre-url" style="color: inherit; text-decoration: none"
               >GROUPIE TRACKER</a
             >
           </h1>
         </div>
+        <!-- Zone de recherche -->
         <div id="searchContainer">
           <input
             type="text"
@@ -22,6 +25,7 @@
             placeholder="Rechercher un artiste..."
           />
         </div>
+        <!-- Liens de navigation -->
         <ul>
           <li><a href="/" class="nav-link">Accueil</a></li>
           <li><a href="/artists" class="nav-link">Artistes</a></li>
@@ -29,16 +33,23 @@
       </nav>
     </header>
 
+    <!-- Section de la page des artistes -->
     <div class="artist-page">
+      <!-- Titre de la liste des artistes -->
       <h1>Liste des artistes</h1>
+      <!-- Conteneur des artistes -->
       <div class="artists-container">
         {{range .Artists}}
+        <!-- Carte pour chaque artiste -->
         <div class="card" data-name="{{.Name}}">
           <a href="/artist/{{.ID}}" class="card-link">
+            <!-- Contenu de la carte -->
             <div class="card-inner">
+              <!-- Face avant de la carte avec l'image de l'artiste -->
               <div class="card-front">
                 <img src="{{.Image}}" alt="Image de l'artiste" />
               </div>
+              <!-- Face arrière de la carte avec les détails de l'artiste -->
               <div class="card-back">
                 <div>
                   <h2>{{.Name}}</h2>
@@ -55,10 +66,15 @@
           </a>
         </div>
         {{end}}
+        <!-- Message "Aucun artiste trouvé" -->
         <p id="noResults" style="display: none">Aucun artiste trouvé.</p>
       </div>
     </div>
+
+    <!-- Script JavaScript pour la fonctionnalité de recherche -->
     <script src="/static/js/search.js"></script>
+
+    <!-- Pied de page -->
     <footer>
       <h3>Groupie Tracker</h3>
       <br />

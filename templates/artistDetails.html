@@ -6,26 +6,33 @@
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
+    <!-- En-tête avec le titre et la navigation -->
     <header>
       <nav>
-        <div class="title"><h1 id="site-title">GROUPIE TRACKER</h1></div>
+        <div class="title"><h1>GROUPIE TRACKER</h1></div>
         <div id="searchContainer">
+          <!-- Zone de recherche -->
           <input
             type="text"
             id="searchBox"
             placeholder="Rechercher un artiste..."
           />
         </div>
+        <!-- Liens de navigation -->
         <ul>
           <li><a href="/" class="nav-link">Accueil</a></li>
           <li><a href="/artists" class="nav-link">Artistes</a></li>
         </ul>
       </nav>
     </header>
+    <!-- Contenu principal -->
     <div class="container">
+      <!-- Titre de l'artiste -->
       <h1 class="title">{{.Artist.Name}}</h1>
       <div class="content">
+        <!-- Carte Google Maps -->
         <div id="map" style="height: 400px; width: 100%"></div>
+        <!-- Image de l'artiste -->
         <div class="image-container">
           <img
             class="image-artist"
@@ -33,9 +40,10 @@
             alt="Image de {{.Artist.Name}}"
           />
         </div>
+        <!-- Informations sur l'artiste -->
         <div class="text-container">
           <h2>Membres:</h2>
-          <br />
+          <!-- Liste des membres de l'artiste -->
           <ul class="members-list">
             {{range .Artist.Members}}
             <li>{{.}}</li>
@@ -44,7 +52,7 @@
           <br />
           <br />
           <h2>Prochaines dates et lieux:</h2>
-          <br />
+          <!-- Liste des prochaines dates et lieux de l'artiste -->
           <ul class="events-list">
             {{range $location, $dates := .DatesLocations}}
             <li
@@ -65,25 +73,27 @@
         </div>
       </div>
     </div>
+    <!-- Coordonnées du premier emplacement pour la carte -->
     <div id="firstLocationCoords" style="display: none">
       {{ .FirstLocationCoords }}
     </div>
 
-    <!-- Définition des emplacements des artistes pour utilisation dans JavaScript -->
+    <!-- Données sur les emplacements des artistes pour la carte -->
     <script>
       window.artistLocations = JSON.parse("{{ .ArtistLocationsDatesJson }}");
     </script>
 
-    <!-- Liens vers les scripts JavaScript personnalisés -->
+    <!-- Scripts JavaScript -->
     <script src="/static/js/map.js"></script>
     <script src="/static/js/scrollToMap.js"></script>
 
-    <!-- Google Maps JavaScript API -->
+    <!-- Script pour charger l'API Google Maps -->
     <script
       async
       defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAh2P2kno4spZ-ERly8TUG4avTK90Z9zrU&callback=initMap"
     ></script>
+    <!-- Pied de page -->
     <footer>
       <h3>Groupie Tracker</h3>
       <br />

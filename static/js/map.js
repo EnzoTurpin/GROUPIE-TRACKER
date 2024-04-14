@@ -1,8 +1,11 @@
+// Fonction pour configurer les marqueurs sur la carte.
 function setUpMarkers(map, locations) {
-  var markers = {};
+  var markers = {}; // Stocke les marqueurs
+
+  // Boucle sur chaque emplacement pour créer un marqueur.
   Object.keys(locations).forEach(function (locationKey) {
     var details = locations[locationKey];
-    var coords = details[0].split(","); // Les coordonnées sont le premier élément
+    var coords = details[0].split(",");
     var lat = parseFloat(coords[0]);
     var lng = parseFloat(coords[1]);
     var pos = new google.maps.LatLng(lat, lng);
@@ -14,6 +17,7 @@ function setUpMarkers(map, locations) {
     markers[locationKey] = marker;
   });
 
+  // Fonction pour centrer la carte sur un marqueur.
   window.centerMapOnMarker = function (markerKey) {
     if (markers[markerKey]) {
       map.setCenter(markers[markerKey].getPosition());
@@ -24,6 +28,7 @@ function setUpMarkers(map, locations) {
   };
 }
 
+// Fonction pour initialiser la carte.
 window.initMap = function () {
   var firstLocationCoordsElement = document.getElementById(
     "firstLocationCoords"
@@ -40,6 +45,7 @@ window.initMap = function () {
   };
   var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
+  // Configure les marqueurs si `window.artistLocations` est défini et est un objet.
   if (
     typeof window.artistLocations === "object" &&
     window.artistLocations !== null
@@ -53,6 +59,7 @@ window.initMap = function () {
   }
 };
 
+// Charge l'API Google Maps si elle n'est pas déjà chargée.
 function loadGoogleMapsAPI() {
   if (!window.google || !window.google.maps) {
     var script = document.createElement("script");
@@ -65,4 +72,5 @@ function loadGoogleMapsAPI() {
   }
 }
 
+// Appelée lorsque la fenêtre est entièrement chargée.
 window.onload = loadGoogleMapsAPI;
