@@ -8,6 +8,8 @@ import (
 	"net/url"
 )
 
+// geocodeLocation effectue une requête de géocodage à l'API Google Maps pour une localisation donnée.
+// Elle renvoie les coordonnées de latitude et de longitude.
 func geocodeLocation(locationName string) (float64, float64, error) {
 	apiKey := "AIzaSyAh2P2kno4spZ-ERly8TUG4avTK90Z9zrU" // Remplacez ceci par votre clé API Google Maps
 	baseUrl := "https://maps.googleapis.com/maps/api/geocode/json"

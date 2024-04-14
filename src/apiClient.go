@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// fetchAPI réalise une requête GET à l'URL spécifiée et déserialise la réponse JSON dans la cible.
 func fetchAPI(url string, target interface{}) error {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -23,6 +24,7 @@ func fetchAPI(url string, target interface{}) error {
 	return json.Unmarshal(body, &target)
 }
 
+// fetchArtists récupère la liste des artistes depuis l'API et convertit les dates du premier album en français.
 func fetchArtists() ([]Artist, error) {
 	var artists []Artist
 	if err := fetchAPI("https://groupietrackers.herokuapp.com/api/artists", &artists); err != nil {
@@ -36,9 +38,10 @@ func fetchArtists() ([]Artist, error) {
 	return artists, nil
 }
 
+// fetchArtistDetails récupère les détails d'un artiste spécifique par son ID,
+// incluant les informations de base, les relations de dates et de lieux, et les coordonnées du premier lieu.
 func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 	var detail ArtistDetail
-	// Fetch artist base details
 	artists, err := fetchArtists()
 	if err != nil {
 		log.Printf("Error fetching artists: %v", err)
@@ -59,7 +62,6 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 		return detail, err
 	}
 
-	// Fetch artist relations
 	locationURL := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/relation/%d", artistID)
 	var relations Relation
 	if err := fetchAPI(locationURL, &relations); err != nil {
@@ -67,7 +69,6 @@ func fetchArtistDetails(artistID int) (ArtistDetail, error) {
 		return detail, err
 	}
 
-	// Process and format location names and dates
 	formattedDatesLocations := make(map[string][]string)
 	for location, dates := range relations.DatesLocations {
 		formattedLocationName := formatLocationName(location)

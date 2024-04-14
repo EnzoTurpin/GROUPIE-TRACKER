@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// homeHandler gère la page d'accueil.
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("templates/home.html")
 	if err != nil {
@@ -18,6 +19,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
+// artistsHandler gère la liste des artistes, avec la possibilité de filtrer par un terme de recherche.
 func artistsHandler(w http.ResponseWriter, r *http.Request) {
 	searchQuery := r.URL.Query().Get("search")
 
@@ -61,6 +63,7 @@ func artistsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// artistDetailHandler gère la page de détail pour un artiste spécifique, identifié par son ID.
 func artistDetailHandler(w http.ResponseWriter, r *http.Request) {
 	artistIDStr := strings.TrimPrefix(r.URL.Path, "/artist/")
 	artistID, err := strconv.Atoi(artistIDStr)

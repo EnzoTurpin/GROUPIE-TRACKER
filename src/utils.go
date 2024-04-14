@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// formatDateToFrench convertit une date du format anglais au format français.
 func formatDateToFrench(dateStr string) string {
 	if dateStr == "" {
 		return "Date non spécifiée"
@@ -22,10 +23,12 @@ func formatDateToFrench(dateStr string) string {
 	return frenchDate
 }
 
+// formatCreationYear convertit une année en chaîne de caractères.
 func formatCreationYear(year int) string {
 	return strconv.Itoa(year)
 }
 
+// formatDate convertit une date du format "JJ-MM-AAAA" au format "JJ mois AAAA".
 func formatDate(dateStr string) string {
 	date, err := time.Parse("02-01-2006", dateStr)
 	if err != nil {
@@ -39,6 +42,7 @@ func formatDate(dateStr string) string {
 	return fmt.Sprintf("%s %s %s", day, month, year)
 }
 
+// formatLocationName convertit le nom d'un lieu d'une forme URL en un format plus lisible.
 func formatLocationName(location string) string {
 	location = strings.Replace(location, "_", " ", -1)
 
@@ -51,11 +55,13 @@ func formatLocationName(location string) string {
 	return strings.Join(parts, ", ")
 }
 
+// generateGoogleMapsLink crée un lien vers Google Maps pour une localisation donnée.
 func generateGoogleMapsLink(locationName string) string {
 	baseUrl := "https://www.google.com/maps/search/?api=1&query="
 	return baseUrl + url.QueryEscape(locationName)
 }
 
+// getFirstKey retourne la première clé d'une map[string][]string.
 func getFirstKey(m map[string][]string) string {
 	for k := range m {
 		return k
