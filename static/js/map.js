@@ -64,7 +64,7 @@ function loadGoogleMapsAPI() {
   if (!window.google || !window.google.maps) {
     var script = document.createElement("script");
     script.src =
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyAh2P2kno4spZ-ERly8TUG4avTK90Z9zrU&callback=initMap";
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyAh2P2kno4spZ-ERly8TUG4avTK90Z9zrU&callback=initMap"; // Clée qui n'est plus valide
     script.defer = true;
     document.head.appendChild(script);
   } else {
